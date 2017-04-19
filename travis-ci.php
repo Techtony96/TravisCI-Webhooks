@@ -90,11 +90,11 @@ $response = file_get_contents($DISCORD_WEBHOOK_URL, false, $context);
 
 
 function getRepoURL($data){
-	return 'http://github.com/' . $data['repository']['owner_name'] . '/' . $data['repository']['name'];
+  return 'http://github.com/' . $data['repository']['owner_name'] . '/' . $data['repository']['name'];
 }
 
 function getCommitURL($data){
-	return getRepoURL($data) . '/commit/' . $data['commit'];
+  return getRepoURL($data) . '/commit/' . $data['commit'];
 }
 
 ?>

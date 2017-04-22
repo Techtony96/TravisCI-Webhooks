@@ -22,6 +22,7 @@ if ($_SERVER['CONTENT_TYPE'] != 'application/x-www-form-urlencoded') {
 }
 
 $fullPostData = $_POST['payload'];
+
 if ($fullPostData == '') {
   header('HTTP/1.0 400 Bad request');
   echo "No data submitted\n";
@@ -29,6 +30,7 @@ if ($fullPostData == '') {
 }
 
 $data = json_decode($fullPostData, true);
+
 if ($data === null) {
   header('HTTP/1.0 400 Bad request');
   echo "JSON cannot be decoded\n";
@@ -45,7 +47,7 @@ if ($data[$result_string] === null) {
 switch ($data[$result_string]) {
   case "Pending":
     $color = $COLOR_IN_PROGRESS;
-	$time = 'started_at';
+    $time = 'started_at';
     break;
   case "Passed":
   case "Fixed":
@@ -55,7 +57,7 @@ switch ($data[$result_string]) {
   case "Failed":
   case "Still Failing":
     $color = $COLOR_FAIL;
-	break;
+    break;
   case "Canceled":
     $color = $COLOR_CANCEL;
 }
@@ -70,10 +72,10 @@ $payload = array(
         'name' => 'Build #' . $data['number'] . ' ' . $data[$result_string] . ' - ' . $data['author_name'],
         'url' => $data['build_url']
       ) ,
-      'title' =>  '[' . $data['repository']['name'] . ':' . $data['branch'] . ']',
-	  'url' => getRepoURL($data),
-	  'description' =>  '[`' . substr($data['commit'], 0, 7) . '`](' . getCommitURL($data) . ') ' . $data['message'],
-	  'timestamp' => $data[$time]
+      'title' => '[' . $data['repository']['name'] . ':' . $data['branch'] . ']',
+      'url' => getRepoURL($data) ,
+      'description' => '[`' . substr($data['commit'], 0, 7) . '`](' . getCommitURL($data) . ') ' . $data['message'],
+      'timestamp' => $data[$time]
     )
   )
 );
@@ -88,12 +90,11 @@ $context = stream_context_create(array(
 
 $response = file_get_contents($DISCORD_WEBHOOK_URL, false, $context);
 
-
-function getRepoURL($data){
+function getRepoURL($data) {
   return 'http://github.com/' . $data['repository']['owner_name'] . '/' . $data['repository']['name'];
 }
 
-function getCommitURL($data){
+function getCommitURL($data) {
   return getRepoURL($data) . '/commit/' . $data['commit'];
 }
 

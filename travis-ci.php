@@ -23,6 +23,14 @@ if ($_SERVER['CONTENT_TYPE'] != 'application/x-www-form-urlencoded') {
 
 $fullPostData = $_POST['payload'];
 
+$travisApiConfig = json_decode(file_get_contents('https://api.travis-ci.org/config'));
+$publicKey = $travisApiConfig->config->notifications->webhook->public_key;
+$signature = base64_decode($_SERVER['HTTP_SIGNATURE']);
+if (openssl_verify($fullPostData, $signature, $publicKey) != 1) {
+  header('HTTP/1.0 401 Access Denied');
+  exit();
+}
+
 if ($fullPostData == '') {
   header('HTTP/1.0 400 Bad request');
   echo "No data submitted\n";
